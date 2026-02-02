@@ -30,5 +30,4 @@ jobs:
 
       - name: Verify Auth
         run: |
-          gcloud auth list
-          gcloud projects get-iam-policy woven-sensor-470012-a6 --flatten="bindings[].members" --format="table(bindings.role)"
+          gcloud storage buckets list
