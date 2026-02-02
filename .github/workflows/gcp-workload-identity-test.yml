@@ -22,8 +22,8 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           # Format: projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID
-          workload_identity_provider: 'projects/1234567890/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
-          service_account: 'your-service-account@your-project.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/245127449165/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'workloadidentity-github@woven-sensor-470012-a6.iam.gserviceaccount.com'
 
       - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v2'
@@ -31,4 +31,4 @@ jobs:
       - name: Verify Auth
         run: |
           gcloud auth list
-          gcloud projects get-iam-policy your-project-id --flatten="bindings[].members" --format="table(bindings.role)"
+          gcloud projects get-iam-policy woven-sensor-470012-a6 --flatten="bindings[].members" --format="table(bindings.role)"
