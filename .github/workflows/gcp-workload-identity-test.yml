@@ -1,6 +1,8 @@
 name: GCP Workload Identity Test
 on:
-  workflow_dispatch: # Allows you to run this manually from the "Actions" tab
+  push:
+    branches:
+      - main
 
 jobs:
   test-auth:
