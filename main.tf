@@ -3,7 +3,7 @@
 variable "project_id" {
   description = "The project ID"
   type        = string
-  default     = "my-project-id"
+  default     = "woven-sensor-470012-a6"
 }
 
 variable "workload_identity_pool_id" {
