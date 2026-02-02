@@ -72,9 +72,15 @@ resource "google_project_iam_member" "github-access" {
 }
 
 resource "google_service_account_iam_member" "wif-sa" {
+  # Grant the workload identity user role to principals originating from
+  # the configured Workload Identity Pool. We create one member per allowed
+  # GitHub repository so the principalSet can reference the repository
+  # attribute (assertion.repository).
+  for_each = toset(local.allowed_repos)
+
   service_account_id = google_service_account.github-svc.id
   role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.main.name}/${each.value.attribute}"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.main.name}/attribute.repository/${each.key}"
 }
 
 resource "google_iam_workload_identity_pool" "main" {
