@@ -67,7 +67,7 @@ resource "google_project_service" "wif_api" {
 
 resource "google_project_iam_member" "github-access" {
   project = var.project_id
-  role    = "roles/workloadIdentityUser,roles/storage.objectViewer,roles/iam.serviceAccountUser"
+  role    = "roles/owner"
   member  = "serviceAccount:${google_service_account.github-svc.email}"
 }
 
