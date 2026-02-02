@@ -7,6 +7,11 @@ on:
 jobs:
   test-auth:
     runs-on: ubuntu-latest
+    env:
+      # Change these for each repo
+      GCP_PROJECT_ID: 'woven-sensor-470012-a6'
+      GCP_PROJECT_NUMBER: '245127449165'
+      SERVICE_ACCOUNT: 'workloadidentity-github@woven-sensor-470012-a6.iam.gserviceaccount.com'
     
     # CRITICAL: These permissions are required for OIDC to work
     permissions:
@@ -22,8 +27,8 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           # Format: projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID
-          workload_identity_provider: 'projects/245127449165/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
-          service_account: 'workloadidentity-github@woven-sensor-470012-a6.iam.gserviceaccount.com'
+          workload_identity_provider: 'projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: '${{ env.SERVICE_ACCOUNT }}'
 
       - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v2'
@@ -31,3 +36,14 @@ jobs:
       - name: Verify Auth
         run: |
           gcloud storage buckets list
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
