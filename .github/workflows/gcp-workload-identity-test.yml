@@ -1,0 +1,32 @@
+name: GCP Workload Identity Test
+on:
+  workflow_dispatch: # Allows you to run this manually from the "Actions" tab
+
+jobs:
+  test-auth:
+    runs-on: ubuntu-latest
+    
+    # CRITICAL: These permissions are required for OIDC to work
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          # Format: projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID
+          workload_identity_provider: 'projects/1234567890/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'your-service-account@your-project.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Verify Auth
+        run: |
+          gcloud auth list
+          gcloud projects get-iam-policy your-project-id --flatten="bindings[].members" --format="table(bindings.role)"
