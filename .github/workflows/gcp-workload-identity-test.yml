@@ -12,6 +12,8 @@ jobs:
       GCP_PROJECT_ID: 'woven-sensor-470012-a6'
       GCP_PROJECT_NUMBER: '245127449165'
       SERVICE_ACCOUNT: 'workloadidentity-github@woven-sensor-470012-a6.iam.gserviceaccount.com'
+      # Terraform plugin cache directory (used by TF to store provider plugins)
+      TF_PLUGIN_CACHE_DIR: ${{ runner.temp }}/.terraform-plugin-cache
     
     # CRITICAL: These permissions are required for OIDC to work
     permissions:
@@ -33,6 +35,18 @@ jobs:
       - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v2'
 
+      - name: Restore Terraform plugin & module cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/.terraform-plugin-cache
+            .terraform/modules
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+
+      - name: Prepare Terraform plugin cache dir
+        run: |
+          mkdir -p $TF_PLUGIN_CACHE_DIR
+
       - name: Verify Auth
         run: |
           gcloud storage buckets list
@@ -43,7 +57,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -var="project_id=${{ env.GCP_PROJECT_ID }}"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -var="project_id=${{ env.GCP_PROJECT_ID }}"
